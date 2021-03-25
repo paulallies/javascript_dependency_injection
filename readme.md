@@ -35,7 +35,7 @@ So start right now and configure vs code to type check all js files by adding th
 
 ```json
 {
-    ...,
+    
     "js/ts.implicitProjectConfig.checkJs": true
 }
 ```
