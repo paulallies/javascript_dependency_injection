@@ -1,7 +1,16 @@
-function getAllPosts(PostRepository) {
+
+/// <reference path="../../typedefs.js" />
+
+/**
+ * 
+ * @param {{postRepository: PostRepository}} dependencies
+ * @returns {{execute: () => Promise<Post[]>}}
+ */
+
+function getAllPosts({ postRepository }) {
     return {
         async execute() {
-            let result = await PostRepository.getPosts();
+            let result = await postRepository.getPosts();
             return result;
 
         }

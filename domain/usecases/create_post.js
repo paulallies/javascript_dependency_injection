@@ -1,12 +1,18 @@
+/// <reference path="../../typedefs.js" />
 
-function createPost(PostRepository) {
-    return {
-        async execute(post) {
-            let result = await PostRepository.createPost(post);
-            return result;
+/**
+ * 
+ * @param {{postRepository: PostRepository}} dependencies
+ * @returns {{execute: (post: Post) => Promise<Post>}}
+ */
+function createPost({ postRepository }) {
+    async function execute(post) {
+        let result = await postRepository.createPost(post);
+        return result;
 
-        }
     }
+
+    return { execute };
 }
 
 

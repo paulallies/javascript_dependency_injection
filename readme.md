@@ -1,41 +1,89 @@
-## Dependency Injection with Javascript Functions
+## Dependency Injection with Javascript without Classes
 
-So you're tired of configuring your project for typescript just so that you can use type checking
-
-Well let's see how we can architect a purely functional purely javascript project.
-This is quite a simple project.
-
-It's main purpose is to manage posts.
-We have 4 usecases.
+We'll be building an api to manage blog posts
 
 1. Create a Post
-2. Show All Posts
-3. Show a specific Post
-4. Delete a Post
-5. Update a Post
+1. Get Posts
 
-To make things even easier we'll use ne-db (a sqlite-like mongodb) database
+To illustrate Dependency Injection. Let's architect our application across multi layers.
 
-Data will be stored in a local file.
+We'll have a 
 
-This is an express project but we aim to break up the application into manageable pieces using a clean-code-like architecture encouraged by Uncle Bob.
+1. Presentation - routes
+1. UseCase - business logic
+1. Repository - to minize duplication and decouple application from persistence 
+1. Datasoure - your persistence implementation
 
-So we'll have main sections to the application
-1. Services (Implementations of Data Persistence)
-2. Domain (Business Logic and Rules)
-3. Presentation (Our comsumers interface)
+Each layer depends on the layer below. 
 
-We will be using Typescript but not in the strict sense.
-We'll only be using typescript to help typechecking
+## PostDataSource
+```js
+var Datastore = require('nedb-promises');
+var postdb = Datastore.create(__dirname + '/db/ne_post.db');
 
-So we'll be using JSDoc and vscode's built in ts-checker
-We'll configure vscode to type-check all the time
+function postDataSource (){
 
-So start right now and configure vs code to type check all js files by adding this line to vs code settings
+    async function createPost(post) {
+        const result = await postdb.insert(post)
+        return result;
+    }
 
-```json
-{
-    
-    "js/ts.implicitProjectConfig.checkJs": true
+    async function getPosts() {
+        const result = await postdb.find()
+        return result
+    }
+
+    return { createPost, getPosts }
+
 }
+
+module.exports = postDataSource;
 ```
+
+## PostRepository
+
+```js
+function postRepo({ postDataSource }) {
+
+    async function createPost(post) {
+        let result = await postDataSource.createPost(post)
+        return result;
+    }
+
+    async function getPosts() {
+        let result = await postDataSource.getPosts();
+        return result;
+    }
+
+    return { createPost, getPosts}
+
+}
+
+module.exports = postRepo;
+```
+
+## CreatePost UseCase
+
+```js
+function createPost({ postRepository }) {
+  
+    async function execute(post) {
+        let result = await postRepository.createPost(post);
+        return result;
+
+    }
+
+    return { execute };
+}
+
+module.exports = createPost;
+```
+
+So for the Presentation layer to use the createPost function, we need to pass in the dependencies as properties.  This is called property injection. Using closures we can return the desired functions to the consumer of the component to use.
+
+```js
+
+```
+
+To make the project testable would need to inject dependencies as follows
+
