@@ -1,8 +1,8 @@
 ## Dependency Injection with Javascript without Classes
 
-Dependency injection is a programming technique that makes a module independent of its dependencies. ... That enables you to replace dependencies without changing the module that uses them.
+Dependency injection is a programming technique that makes a module independent of its dependencies. That enables you to replace dependencies without changing the module that uses them.
 
-To illustrate Dependency Injection, we'll be building an api with the following endpoints
+To illustrate Dependency Injection, we'll be building an API with the following endpoints
 
 1. GET /post: Gets all posts
 1. POST /post: Creates a post
@@ -38,7 +38,7 @@ function postDataSource (){
 
 module.exports = postDataSource;
 ```
-The Datasource module depends directly on third a party lib as shown in the require statement. <i>(nedb is an embedded persistent database for Node. API is a subset of MongoDB)</i>
+The Datasource uses on third a party lib as shown in the require statement. <i>(nedb is an embedded persistent database for Node. API is a subset of MongoDB)</i>
 
 
 ## 2. PostRepository
@@ -83,7 +83,8 @@ function createPostUseCase({ postRepository }) {
 
 module.exports = createPost;
 ```
-As we've done with the repository, the usecase is property injected the post repository to allow the execute function to have access to it.  Let's now build the post router and see how we chain these dependencies. 
+As we've done with the post repository, the post repository is **property injected** into the usecase.  
+Let's now build the post router and see how we chain these dependencies. 
 
 
 ## 3. Post Router
@@ -116,7 +117,7 @@ router.post("/", async (req, res) => {
 
 module.exports = router;
 ```
-With the code above we manually needed to create and chain together the dependencies in order to produce a usecase object on which we run the execute command.
+With the code above, we manually needed to create and chain together the dependencies in order to produce a usecase object on which we run the execute command.
 
 We can simplify this process by using an IoC container. IoC container (a.k.a. DI Container) is a framework for implementing automatic dependency injection. It manages object creation, and also injects dependencies. Let's firstly create the container.
 
@@ -131,10 +132,10 @@ const CreatePostUsecase = require('./domain/usecases/create_post');
 const container = createContainer();
 
 container.register({
-    postDataSource: asFunction(PostDataSource)
+    postDataSource: asFunction(PostDataSource),
     postRepository: asFunction(PostRepository),
     getPostsUseCase: asFunction(GetAllPostsUsecase),
-    createPostUsecase: asFunction(CreatePostUsecase),
+    createPostUsecase: asFunction(CreatePostUsecase)
 });
 
 module.exports = container;
