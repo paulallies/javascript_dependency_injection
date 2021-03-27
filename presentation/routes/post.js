@@ -1,40 +1,36 @@
 const express = require("express");
 const router = express.Router();
-const { cradle, resolve } = require("../../container");
+const { resolve } = require("../../container");
 
 router.get("/", async (req, res) => {
-    const getPosts = cradle.getAllPostsUsecase
-    let result = await getPosts.execute();
-    res.send(result)
-
+    const getPosts = resolve("getPostsUseCase")
+    const result = await getPosts.execute();
+    res.json(result)
 })
 
+router.post("/", async (req, res) => {
+    const createPost = resolve("createPostUsecase");
+    const result = await createPost.execute(req.body);
+    res.json(result);
+})
 
 router.get("/:id", async (req, res) => {
-    const getPost = resolve("getPostUsecase")
-    let result = await getPost.execute(req.params.id);
-    res.send(result)
-
+    const getPost = resolve("getPostUsecase");
+    const result = await getPost.execute(req.params.id);
+    res.json(result);
 })
 
 router.delete("/:id", async (req, res) => {
-    const deletePost = resolve("deletePostUsecase")
-    let result = await deletePost.execute(req.params.id);
-    res.send(result)
+    const deletePost = resolve("deletePostUsecase");
+    const result = await deletePost.execute(req.params.id);
+    res.json(result);
 
-})
-
-
-router.post("/", async (req, res) => {
-    const createPost = resolve("createPostUsecase")
-    let result = await createPost.execute(req.body);
-    res.send(result)
 })
 
 router.put("/", async (req, res) => {
-    const createPost = resolve("updatePostsUsecase")
-    let result = await createPost.execute(req.body);
-    res.send(result)
+    const createPost = resolve("updatePostsUsecase");
+    const result = await createPost.execute(req.body);
+    res.json(result);
 })
 
 module.exports = router;
